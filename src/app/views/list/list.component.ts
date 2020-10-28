@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { PokeapiService } from 'src/app/services/pokeapi.service';
 
 @Component({
   selector: 'app-list',
@@ -8,15 +9,20 @@ import { Component, OnInit } from '@angular/core';
 export class ListComponent implements OnInit {
   selectedPkm = null;
   nameFilter = '';
-  pokemonList = [
-    { name: 'Bulbasaur', number: 1 },
-    { name: 'Charmander', number: 4 },
-    { name: 'Squirtle', number: 7 },
-  ];
-  constructor() {}
+  constructor(private pokeApi: PokeapiService) {}
+  ngOnInit(): void {
+    this.pokeApi.listAll();
+  }
 
-  ngOnInit(): void {}
-
+  get pokemonList() {
+    return this.pokeApi.pokemonList.filter((pokemon) => {
+      return (
+        pokemon.name
+          .toLocaleLowerCase()
+          .indexOf(this.nameFilter.toLocaleLowerCase()) !== -1
+      );
+    });
+  }
   get pkmSprite() {
     const number = ('000' + this.selectedPkm.number).slice(-3);
     return `//serebii.net/pokedex-xy/icon/${number}.png`;
